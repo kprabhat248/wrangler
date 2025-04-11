@@ -215,4 +215,40 @@ public class RecipeCompilerTest {
     Set<String> loadableDirectives = compile.getSymbols().getLoadableDirectives();
     Assert.assertEquals(4, loadableDirectives.size());
   }
+  @Test
+  public void testAggregateStatsValidSyntax() throws Exception {
+    String[] recipe = new String[] {
+      "aggregate-stats :data_transfer_size :response_time total_size_mb total_time_sec;"
+    };
+    CompileStatus compile = TestingRig.compile(recipe);
+    Assert.assertTrue("Expected successful compile", compile.isSuccess());
+  }
+
+  @Test
+  public void testAggregateStatsWithDifferentUnits() throws Exception {
+    String[] recipe = new String[] {
+      "aggregate-stats :upload :latency total_upload_gb total_latency_ms;"
+    };
+    CompileStatus compile = TestingRig.compile(recipe);
+    Assert.assertTrue("Expected successful compile", compile.isSuccess());
+  }
+
+  @Test
+  public void testAggregateStatsInvalidSyntaxTooFewArgs() throws Exception {
+    String[] recipe = new String[] {
+      "aggregate-stats :data_transfer_size total_size_mb;" // Missing response_time and output field
+    };
+    CompileStatus compile = TestingRig.compile(recipe);
+    Assert.assertFalse("Expected failure due to insufficient arguments", compile.isSuccess());
+  }
+
+  @Test
+  public void testAggregateStatsInvalidUnits() throws Exception {
+    String[] recipe = new String[] {
+      "aggregate-stats :size :time total_size_magic total_time_fairy;" // Invalid units
+    };
+    CompileStatus compile = TestingRig.compile(recipe);
+    Assert.assertFalse("Expected failure due to invalid output units", compile.isSuccess());
+  }
+
 }

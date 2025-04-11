@@ -139,9 +139,6 @@ numberRange
  : Number ':' Number '=' value
  ;
 
-value
- : String | Number | Column | Bool
- ;
 
 ecommand
  : '!' Identifier
@@ -311,3 +308,20 @@ fragment Int
 fragment Digit
  : [0-9]
  ;
+
+value
+  : String
+  | Number
+  | Bool
+  | BYTE_SIZE
+  | TIME_DURATION
+  ;
+
+
+
+// Lexer rules (at bottom)
+BYTE_SIZE: [0-9]+ ('.' [0-9]+)? BYTE_UNIT;
+fragment BYTE_UNIT: ('B' | 'KB' | 'MB' | 'GB' | 'TB' | 'PB');
+
+TIME_DURATION: [0-9]+ ('.' [0-9]+)? TIME_UNIT;
+fragment TIME_UNIT: ('ms' | 's' | 'm' | 'h' | 'd');
